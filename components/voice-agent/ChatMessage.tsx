@@ -1,12 +1,28 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/lib/types";
 import { ToolBadge } from "./ToolBadge";
 import { VoicePlayer } from "./VoicePlayer";
 
-function formatTime(ts: number) {
-  return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+/** Renders time only after mount to avoid SSR/client locale mismatches. */
+function MessageTime({ timestamp }: { timestamp: number }) {
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    setLabel(
+      new Date(timestamp).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
+  }, [timestamp]);
+
+  return (
+    <span className="mt-1 inline-block min-w-[2.5rem] px-1 text-[10px] text-muted-foreground">
+      {label}
+    </span>
+  );
 }
 
 // Lightweight markdown-ish renderer: bold + code blocks + line breaks.
@@ -65,9 +81,7 @@ export function ChatMessage({ message }: { message: Message }) {
           <RichContent text={message.content} />
           {message.audioUrl && !isUser && <VoicePlayer src={message.audioUrl} />}
         </div>
-        <span className="mt-1 px-1 text-[10px] text-muted-foreground">
-          {formatTime(message.timestamp)}
-        </span>
+        <MessageTime timestamp={message.timestamp} />
       </div>
       {isUser && (
         <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-secondary text-secondary-foreground">

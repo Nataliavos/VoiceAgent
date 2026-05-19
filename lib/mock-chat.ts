@@ -7,95 +7,16 @@ const MOCK_AUDIO_URL =
 const BUDGET_CALC_EXPR =
   "(120 * 3) + (40 * 2 * 3) + 80"; // hotel + food + transport
 
-export const initialMessages: Message[] = [
-  {
-    id: "m1",
-    role: "assistant",
-    content:
-      "Hi! I'm **TravelMate**, your AI travel planning assistant. I can help you plan trips, estimate budgets, search destination information, and answer by text or voice.",
-    timestamp: Date.now() - 1000 * 60 * 15,
-  },
-  {
-    id: "m2",
-    role: "user",
-    content: "I want to travel to Cartagena for 3 days.",
-    timestamp: Date.now() - 1000 * 60 * 12,
-  },
-  {
-    id: "m3",
-    role: "assistant",
-    content: `Here's a simple **3-day Cartagena** plan:
+export const WELCOME_MESSAGE: Message = {
+  id: "welcome",
+  role: "assistant",
+  content:
+    "Hi! I'm TravelMate, your AI travel assistant. How can I help you plan your next trip?",
+  timestamp: 0,
+};
 
-- **Day 1** — Old City walking tour, Plaza Santo Domingo, sunset at Café del Mar in Getsemaní.
-- **Day 2** — Rosario Islands day trip (snorkeling and beach lunch).
-- **Day 3** — Castillo de San Felipe, local food in Getsemaní, souvenir shopping before departure.
-
-**Tips:** Book island tours early, carry cash for small vendors, and stay hydrated in the coastal heat.`,
-    timestamp: Date.now() - 1000 * 60 * 12,
-  },
-  {
-    id: "m4",
-    role: "user",
-    content:
-      "Calculate a trip budget for 2 people, 3 nights, 120 USD per hotel night, 40 USD daily food per person, and 80 USD local transport.",
-    timestamp: Date.now() - 1000 * 60 * 8,
-  },
-  {
-    id: "m5",
-    role: "assistant",
-    content: `Estimated trip budget for **2 people, 3 nights**:
-
-| Item | Calculation | Subtotal |
-|------|-------------|----------|
-| Hotel | 3 nights × $120 | **$360** |
-| Food | 2 people × 3 days × $40 | **$240** |
-| Local transport | flat rate | **$80** |
-| **Total** | | **$680 USD** |
-
-This is a baseline estimate—add flights, insurance, and activities separately.`,
-    timestamp: Date.now() - 1000 * 60 * 8,
-    tool: {
-      name: "Calculator",
-      input: BUDGET_CALC_EXPR,
-      output: "680",
-    },
-  },
-  {
-    id: "m6",
-    role: "user",
-    content: "Search current travel recommendations for Medellin.",
-    timestamp: Date.now() - 1000 * 60 * 5,
-  },
-  {
-    id: "m7",
-    role: "assistant",
-    content: `Here's a quick summary based on current results for **Medellín travel recommendations**:
-
-- **Comuna 13 & city tours** — Guided street-art walks remain a top-rated experience; book morning slots in peak season.
-- **Coffee region day trips** — Jardín and Guatapé are frequently recommended for 1-day excursions from the city.
-- **Safety & transport** — Official sources suggest using registered ride apps and avoiding unmarked taxis at night.`,
-    timestamp: Date.now() - 1000 * 60 * 5,
-    tool: {
-      name: "Web Search",
-      input: "current travel recommendations for Medellin",
-      output: "Summary of top 3 results",
-    },
-  },
-  {
-    id: "m8",
-    role: "user",
-    content: "Summarize that itinerary in voice mode",
-    timestamp: Date.now() - 1000 * 60 * 2,
-  },
-  {
-    id: "m9",
-    role: "assistant",
-    content:
-      "Here's a spoken summary of your Cartagena itinerary and Medellín tips. You can play it below.",
-    timestamp: Date.now() - 1000 * 60 * 2,
-    audioUrl: MOCK_AUDIO_URL,
-  },
-];
+/** Default chat history — single welcome message only. */
+export const initialMessages: Message[] = [WELCOME_MESSAGE];
 
 function detectTool(input: string): ToolUsage | undefined {
   const text = input.toLowerCase();

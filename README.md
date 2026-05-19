@@ -1,246 +1,215 @@
-# TravelMate VoiceAgent
+# TravelMate
 
-A **multimodal AI travel planning assistant** for a travel agency. TravelMate helps clients plan trips, estimate budgets, and find up-to-date destination information—through a conversational web interface with **text or voice** responses and transparent **tool usage** indicators.
+<img src="./images/logo.png" alt="TravelMate logo" width="180" />
 
-Built as the RIWI **Automatización con IA** performance assessment: a conversational agent with real tools, session memory, and optional RAG (bonus).
+**Independent AI Travel Planner**
 
-> Official requirements: [`docs/assessment-requirements.md`](docs/assessment-requirements.md)  
-> Implementation plan: [`docs/technical-plan.md`](docs/technical-plan.md)
-
----
-
-## Use Case
-
-**TravelMate VoiceAgent** acts as an AI travel advisor for agency clients:
-
-- Suggests **itineraries** and day-by-day plans for cities and regions.
-- Runs **budget estimates** (hotel nights, per-person food, transport) via the calculator tool.
-- Performs **web search** for current destination recommendations, events, and safety notes.
-- Responds in **text** or **synthesized voice**, based on user preference.
-
-The agent chooses tools autonomously; the UI shows when a tool was used versus a direct answer.
+Plan your own trips with AI, local-style guidance, budget estimates, and real-time travel information.
 
 ---
 
-## Features
+## 🌎 Overview
 
-- 💬 **Conversational travel planning** with full chat history
-- 🧠 **Session memory** — last **7** user/assistant messages for context
-- 🔧 **Two tools:** Calculator (trip budgets) and Web Search (Tavily)
-- 🏷️ **Visible tool usage indicators** persisted in chat history
-- 📝 **Text mode** — standard message bubbles
-- 🔊 **Voice mode** — OpenAI TTS with in-browser playback
-- 🔒 **Server-side API keys** — no secrets in the client
-- 📄 **English documentation** and `.env.example` for setup
-- 🔍 **Optional RAG** (bonus) — retrieval over a travel agency site or travel information URL
+TravelMate is a multimodal AI-powered travel planning web application built as part of the VoiceAgent assessment.
 
----
+The application helps independent travelers explore destinations, estimate travel budgets, get local-style recommendations, and interact conversationally with an AI travel copilot using both text and voice.
 
-## Architecture Overview
-
-```
-Browser (Next.js + React)
-    │  chat UI, text/voice toggle, tool badges, audio player
-    ▼
-Next.js API Routes
-    ├── POST /api/chat  → OpenAI agent + tools + 7-msg memory
-    └── POST /api/tts     → OpenAI text-to-speech
-    ▼
-External APIs: OpenAI (chat + TTS), Tavily (search)
-```
-
-Client layer: `lib/chat-api.ts` (mock mode via `NEXT_PUBLIC_USE_MOCK_CHAT` or live `/api/chat` when implemented).
-
-See [`docs/technical-plan.md`](docs/technical-plan.md) for phased implementation and file layout.
+Users can:
+- Chat with an AI travel assistant
+- Speak to the assistant using voice input
+- Receive responses in text or synthesized voice
+- Get travel budget estimations
+- Search real-time travel information
+- Explore destinations through a modern dashboard experience
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js (App Router) |
-| Language | TypeScript |
-| UI | React + shadcn/ui components |
-| Agent | OpenAI Chat Completions with function calling |
-| Web search | Tavily API |
-| TTS | OpenAI TTS (`gpt-4o-mini-tts`) |
-| Styling | Tailwind CSS |
+### 🤖 AI Conversational Assistant
+- OpenAI Responses API integration
+- Context-aware conversations
+- Memory of the last 7 messages
+- Floating AI assistant widget
 
-No database or authentication in the base scope.
+### 🎙️ Voice Interaction
+- Browser Speech Recognition API for voice input
+- OpenAI TTS for voice responses
+- Text mode and Voice mode
 
----
+### 🛠️ Real Tools Integration
+The assistant can autonomously decide when to use tools.
 
-## Tools
+#### 1. Calculator Tool
+Used for:
+- Travel budget calculations
+- Hotel cost estimates
+- Food and transportation estimates
+- General arithmetic operations
 
-### 1. Calculator (`calculator`)
+#### 2. Web Search Tool
+Used for:
+- Current travel recommendations
+- Destination safety updates
+- Weather and travel information
+- Local travel insights
 
-| Property | Description |
-|----------|-------------|
-| **Purpose** | Exact math for travel budgets and fares |
-| **Parameters** | `expression` (string) — sanitized arithmetic expression |
-| **Example** | *"Calculate a trip budget for 2 people, 3 nights, $120/night hotel…"* |
+Powered by Tavily API.
 
-### 2. Web Search (`web_search`)
+### 🧠 Conversational Memory
+- Stores the last 7 chat messages
+- Persistent session memory using localStorage
+- Chat history survives widget close/open and page refresh
 
-| Property | Description |
-|----------|-------------|
-| **Purpose** | Current destination information from the web |
-| **Parameters** | `query` (string); optional `maxResults` (number, default 3) |
-| **Provider** | Tavily |
-| **Example** | *"Search current travel recommendations for Medellín"* |
-
-Both tools are defined in `lib/tools.ts` (to be implemented). The model decides when to invoke them.
-
----
-
-## Response Modes
-
-| Mode | Behavior |
-|------|----------|
-| **Text** | Assistant reply appears as a normal chat message |
-| **Voice** | Same text plus audio from `/api/tts`, played via the in-chat audio player |
-
-The user can switch modes at any time; the next message uses the selected mode.
+### 🗺️ Travel Dashboard
+- Featured destinations
+- Local-style travel inspiration
+- Budget planner section
+- Real-time travel update section
+- Floating AI travel copilot
 
 ---
 
-## Setup
+## 🧩 Selected Use Case
 
-### Prerequisites
+TravelMate is designed as an **independent AI travel planning platform**.
 
-- Node.js 18+
-- npm (or pnpm/yarn)
-- OpenAI API key
-- Tavily API key
+Unlike a traditional travel agency, TravelMate does not sell travel packages or process bookings directly.
 
-### 1. Clone and install
+Instead, it helps users:
+- Plan trips independently
+- Estimate travel costs
+- Discover destinations
+- Access real-time travel information
+- Receive AI-guided travel recommendations
+
+The AI assistant acts as a travel copilot integrated into the application experience.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- Next.js
+- React
+- TypeScript
+- TailwindCSS
+- shadcn/ui
+
+### AI & APIs
+- OpenAI Responses API
+- OpenAI TTS
+- Tavily Search API
+
+### Browser APIs
+- Web Speech API (Speech Recognition)
+
+---
+
+## 🚀 Setup
+
+### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Nataliavos/VoiceAgent.git
 cd VoiceAgent
+```
+
+---
+
+### 2. Install dependencies
+
+```bash
 npm install
 ```
 
-### 2. Environment variables
+---
 
-Copy the example file and fill in your keys:
+### 3. Configure environment variables
 
-```bash
-cp .env.example .env.local
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_USE_MOCK_CHAT=false
+
+OPENAI_API_KEY=your_openai_key
+OPENAI_MODEL=gpt-4o-mini
+
+TAVILY_API_KEY=your_tavily_key
+
+OPENAI_TTS_MODEL=gpt-4o-mini-tts
+OPENAI_TTS_VOICE=nova
+OPENAI_TTS_SPEED=1.15
 ```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_USE_MOCK_CHAT` | No | `true` = mock replies (no backend); `false` = call `/api/chat` |
-| `OPENAI_API_KEY` | Yes* | OpenAI API key for chat and TTS |
-| `TAVILY_API_KEY` | Yes* | Tavily API key for web search tool |
-| `OPENAI_TTS_MODEL` | No | Default: `gpt-4o-mini-tts` |
-| `OPENAI_TTS_VOICE` | No | Default: `alloy` |
+---
 
-\*Required when implementing the real backend; mock mode works without keys for UI demos.
-
-Never commit `.env` or `.env.local`. Only `.env.example` belongs in the repo.
-
-### 3. Run locally
+### 4. Run the development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open:
 
-With `NEXT_PUBLIC_USE_MOCK_CHAT=true`, the chat UI runs with travel-themed sample history and simulated tool responses.
-
----
-
-## How to Test Required Features
-
-Use this checklist before delivery (maps to assessment rubric):
-
-1. **Chat UI** — App loads; travel-themed history and input work.
-2. **Text/Voice toggle** — Switch modes; voice shows audio player, text does not require TTS.
-3. **Memory (7 messages)** — In one session, reference an earlier destination or budget within ~7 turns.
-4. **Calculator** — Ask for a trip budget with clear numbers — badge shows `Calculator`, correct total.
-5. **Web search** — Ask: *"Search current travel recommendations for Medellín"* — badge shows `Web Search`.
-6. **Direct reply** — Ask: *"I want to travel to Cartagena for 3 days"* — itinerary without tool badge.
-7. **Tool history** — Scroll up; tool badges remain on old messages.
-8. **System prompt** — Open `lib/systemPrompt.ts`; confirm ≥5 distinct instructions.
-9. **Secrets** — `git grep -i sk-` and search for hardcoded keys; none in repo.
-10. **Fresh install** — Clone in a clean folder, follow README only.
-
----
-
-## Technical Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| **Next.js full-stack** | Single repo, one dev command, API keys stay on server |
-| **OpenAI function calling** | Native tool routing without extra agent framework for v1 |
-| **Tavily for search** | Simple API, good for current destination facts |
-| **7-message server-side trim** | Matches rubric; single source of truth |
-| **Client `lib/chat-api.ts`** | Swaps mock vs live API without UI changes |
-| **Tool metadata in API response** | Persistent UI badges (`Calculator`, `Web Search`) |
-| **Separate `/api/tts`** | Voice can be retried without re-running the agent |
-| **Travel agency use case** | Clear demo narrative for assessment reviewers |
-
----
-
-## Future Improvements
-
-- Implement `POST /api/chat` and `POST /api/tts` with real OpenAI + Tavily
-- Streaming assistant tokens for lower perceived latency
-- Rate limiting and request validation middleware
-- Deploy to Vercel with environment variables in dashboard
-- Export trip plan as Markdown or PDF
-
----
-
-## Optional RAG (Bonus)
-
-If time allows, add retrieval over a travel-focused source:
-
-1. Set `RAG_SOURCE_URL` in `.env.local` (travel agency website or official tourism board URL).
-2. Fetch content, chunk, embed with OpenAI.
-3. Store vectors in Chroma or FAISS locally.
-4. Inject top-k chunks into context for agency-specific policies, packages, or destination pages.
-
-Example candidate URLs: your agency’s FAQ page, or [Colombia Travel](https://www.colombia.travel/en) for destination facts.
-
-This section is **not required** for the base assessment pass.
-
----
-
-## Project Structure
-
-```
-app/
-  page.tsx
-  layout.tsx
-  api/chat/route.ts   # (planned)
-  api/tts/route.ts    # (planned)
-components/voice-agent/
-lib/
-  chat-api.ts
-  mock-chat.ts
-  systemPrompt.ts
-  types.ts
-  tools.ts            # (planned)
-docs/
-  assessment-requirements.md
-  technical-plan.md
+```txt
+http://localhost:3000
 ```
 
 ---
 
-## License & Delivery
+## 🎤 How to Use
 
-- Deliverable: `nombre-apellido-voiceagent.zip` including full source + public GitHub repo.
-- All code and documentation in **English**.
-- Explain technical decisions during the oral defense (*sustentación*).
+### Text Interaction
+- Open the floating TravelMate assistant
+- Type a travel-related request
+- The assistant may answer directly or use tools automatically
+
+### Voice Interaction
+- Click the microphone button
+- Speak naturally
+- The message is transcribed and sent automatically
+- If Voice Mode is enabled, the assistant responds with synthesized speech
 
 ---
 
-## Author
+## 🧪 Example Prompts
 
-RIWI — Automatización con IA · Individual performance test
+### Budget Calculation
+```txt
+Plan a 4-day trip to Cartagena for two people with a medium budget.
+```
+
+### Web Search
+```txt
+Search current travel recommendations for Medellín.
+```
+
+### Voice Interaction
+```txt
+Quiero planear un viaje romántico a Cartagena para dos personas.
+```
+
+---
+
+## 📂 Project Links
+
+### GitHub Repository
+https://github.com/Nataliavos/VoiceAgent.git
+
+### Live Deployment (Vercel)
+[ADD VERCEL URL HERE]
+
+---
+
+## 📌 Notes
+
+- This project was developed as an MVP for the VoiceAgent technical assessment.
+- Voice input depends on browser support for the Web Speech API.
+- The application currently focuses on Colombia destinations as part of the demo experience.
+
+---
+
+## 👩‍💻 Author
+
+Developed by Natalia Vargas Osorio.

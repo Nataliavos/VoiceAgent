@@ -1,20 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
+import { Loader2, Plus, X } from "lucide-react";
 import { buildChatHistory, sendAgentMessage } from "@/lib/chat-api";
-import { initialMessages } from "@/lib/mock-chat";
 import type { Message, ResponseMode } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Sidebar } from "./Sidebar";
 import { ResponseModeToggle } from "./ResponseModeToggle";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 
-export function ChatLayout() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+type ChatLayoutProps = {
+  variant?: "full" | "widget";
+  messages: Message[];
+  setMessages: Dispatch<SetStateAction<Message[]>>;
+  onNewChat: () => void;
+  draft?: string;
+  onDraftConsumed?: () => void;
+  onClose?: () => void;
+};
+
+export function ChatLayout({
+  variant = "full",
+  messages,
+  setMessages,
+  onNewChat,
+  draft,
+  onDraftConsumed,
+  onClose,
+}: ChatLayoutProps) {
   const [mode, setMode] = useState<ResponseMode>("text");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const isWidget = variant === "widget";
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -52,24 +71,64 @@ export function ChatLayout() {
     }
   };
 
-  const handleNew = () => setMessages(initialMessages);
-
   return (
-    <div className="flex h-screen w-full bg-background text-foreground">
-      <Sidebar onNew={handleNew} />
-      <main className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-border/60 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <h1 className="text-sm font-semibold tracking-tight">TravelMate VoiceAgent</h1>
-            <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] text-muted-foreground">
-              AI Travel Assistant
-            </span>
+    <div
+      className={cn(
+        "flex bg-background text-foreground",
+        isWidget ? "h-full w-full flex-col" : "h-screen w-full",
+      )}
+    >
+      {!isWidget && <Sidebar onNew={onNewChat} />}
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header
+          className={cn(
+            "flex shrink-0 items-center justify-between gap-2 border-b border-border/60",
+            isWidget ? "px-3 py-2" : "px-4 py-3",
+          )}
+        >
+          <div className="flex min-w-0 items-center gap-1.5">
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close chat"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <h1 className="truncate text-sm font-semibold tracking-tight">
+              {isWidget ? "TravelMate" : "TravelMate VoiceAgent"}
+            </h1>
           </div>
-          <ResponseModeToggle mode={mode} onChange={setMode} />
+          <div className="flex shrink-0 items-center gap-1.5">
+            {isWidget && (
+              <button
+                type="button"
+                onClick={onNewChat}
+                disabled={loading}
+                aria-label="New chat"
+                className="flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              >
+                <Plus className="h-3 w-3 shrink-0" />
+                New chat
+              </button>
+            )}
+            <ResponseModeToggle
+              mode={mode}
+              onChange={setMode}
+              compact={isWidget}
+            />
+          </div>
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+          <div
+            className={cn(
+              "mx-auto flex w-full flex-col gap-4 px-4 py-6",
+              isWidget ? "max-w-none gap-3 px-3 py-4" : "max-w-3xl gap-6 py-8",
+            )}
+          >
             {messages.map((m) => (
               <ChatMessage key={m.id} message={m} />
             ))}
@@ -82,7 +141,13 @@ export function ChatLayout() {
           </div>
         </div>
 
-        <ChatInput onSend={handleSend} disabled={loading} />
+        <ChatInput
+          onSend={handleSend}
+          disabled={loading}
+          draft={draft}
+          onDraftConsumed={onDraftConsumed}
+          compact={isWidget}
+        />
       </main>
     </div>
   );
