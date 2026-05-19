@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.pnp.cjs
+
+# Next.js
+.next/
+out/
+
+# Production / build
+dist/
+build/
+*.tsbuildinfo
+
+# Environment (keep .env.example in repo)
+.env
+.env.*
+!.env.example
+
+# Logs & debug
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# Testing
+coverage/
+
+# Vercel
+.vercel/
+
+# Turbo / caches
+.turbo/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+*.pem
+
+# Editor / IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# Optional RAG / vector stores (bonus phase)
+chroma/
+.chroma/
+faiss_index/
+
+# Cursor local project data
+.cursor/
