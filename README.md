@@ -198,7 +198,7 @@ Quiero planear un viaje romántico a Cartagena para dos personas.
 https://github.com/Nataliavos/VoiceAgent.git
 
 ### Live Deployment (Vercel)
-[ADD VERCEL URL HERE]
+https://voice-agent-gray-eight.vercel.app/
 
 ---
 
