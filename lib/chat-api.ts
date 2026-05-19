@@ -14,7 +14,7 @@ type ChatApiResponse = {
   };
 };
 
-function useMockChat(): boolean {
+function isMockChatEnabled(): boolean {
   return process.env.NEXT_PUBLIC_USE_MOCK_CHAT === "true";
 }
 
@@ -70,7 +70,7 @@ export async function sendAgentMessage(params: {
   messages: ChatHistoryMessage[];
   responseMode: ResponseMode;
 }): Promise<Message> {
-  if (useMockChat()) {
+  if (isMockChatEnabled()) {
     const lastUser = [...params.messages].reverse().find((m) => m.role === "user");
     if (!lastUser) {
       throw new Error("No user message in chat history");
