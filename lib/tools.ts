@@ -42,6 +42,17 @@ export const OPENAI_TOOLS: FunctionTool[] = [
 ];
 
 const ALLOWED_EXPR = /^[\d\s+\-*/().]+$/;
+const TRAVEL_QUERY_HINTS =
+  /\b(travel|trip|itinerary|destination|flight|hotel|hostel|tour|visa|passport|airport|bus|train|weather|safety|attraction|budget|vacation|holiday|journey|turismo|viaje|itinerario|destino|vuelo|hotel|hospedaje|tour|visa|pasaporte|aeropuerto|clima|seguridad|atraccion|presupuesto|vacaciones)\b/i;
+const NON_TRAVEL_SERVICE_HINTS =
+  /\b(therapist|therapy|psychologist|counselor|lawyer|doctor|clinic|hospital|psychiatrist|plumber|electrician|dentist|psicolog|terapeut|abogad|medic|doctor|hospital|clinica|psiquiatra|fontaner|electricista|odontolog)\b/i;
+
+export function isTravelRelatedQuery(query: string): boolean {
+  const text = query.trim().toLowerCase();
+  if (!text) return false;
+  if (NON_TRAVEL_SERVICE_HINTS.test(text)) return false;
+  return TRAVEL_QUERY_HINTS.test(text);
+}
 
 /** Safe arithmetic evaluator — no eval. Supports + - * / and parentheses. */
 export function safeCalculate(expression: string): string {
@@ -274,6 +285,13 @@ export async function executeTool(
 
   if (name === "web_search") {
     const query = args.query ?? "";
+    if (!isTravelRelatedQuery(query)) {
+      return {
+        output:
+          "Tool blocked: web_search can only be used for travel-related requests.",
+        usage: null,
+      };
+    }
     const output = await executeWebSearch(query);
     return {
       output,
