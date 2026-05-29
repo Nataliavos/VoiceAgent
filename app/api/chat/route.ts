@@ -62,34 +62,6 @@ function extractAssistantText(response: Response): string {
   return parts.join("\n").trim();
 }
 
-const TRAVEL_TOPIC_HINTS =
-  /\b(travel|trip|itinerary|destination|flight|hotel|hostel|booking|airline|airport|visa|passport|tour|attraction|weather|safety|transport|bus|train|budget|vacation|holiday|journey|tourism|turismo|viaje|itinerario|destino|vuelo|hotel|hospedaje|reserva|aerolinea|aeropuerto|visa|pasaporte|tour|atraccion|clima|seguridad|transporte|bus|tren|presupuesto|vacaciones)\b/i;
-const NON_TRAVEL_HINTS =
-  /\b(therapist|therapy|psychologist|psychiatrist|depressed|depression|anxiety|lawyer|attorney|doctor|clinic|hospital|medical|diagnosis|exam answers|homework|coding interview|debug this code|psicolog|terapeut|psiquiatra|triste|depresion|ansiedad|abogad|medic|doctor|clinica|hospital|diagnostico|tarea|examen)\b/i;
-const GREETING_ONLY =
-  /^(hi|hello|hey|hola|buenas|good morning|good afternoon|good evening|buenos dias|buenas tardes|buenas noches)[!. ]*$/i;
-
-function detectSpanish(text: string): boolean {
-  return /[¿¡]|\b(hola|gracias|viaje|viajar|destino|presupuesto|ayuda|quiero|necesito)\b/i.test(
-    text,
-  );
-}
-
-function buildOutOfScopeReply(userText: string): string {
-  if (detectSpanish(userText)) {
-    return "Solo puedo ayudar con temas de viajes (destinos, itinerarios, presupuesto, transporte, seguridad turistica y requisitos de viaje). Si quieres, te ayudo a planear tu proximo viaje.";
-  }
-  return "I can only help with travel-related topics (destinations, itineraries, budgets, transportation, travel safety, and trip requirements). If you want, I can help you plan your next trip.";
-}
-
-function isTravelInScope(userText: string): boolean {
-  const text = userText.trim();
-  if (!text) return true;
-  if (GREETING_ONLY.test(text)) return true;
-  if (NON_TRAVEL_HINTS.test(text)) return false;
-  return TRAVEL_TOPIC_HINTS.test(text);
-}
-
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ChatRequestBody;
@@ -129,17 +101,6 @@ export async function POST(request: Request) {
     }
 
     const messages = trimMessages(parsed);
-    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
-    if (lastUserMessage && !isTravelInScope(lastUserMessage.content)) {
-      return NextResponse.json({
-        message: {
-          content: buildOutOfScopeReply(lastUserMessage.content),
-          tool: null,
-          audioUrl: null,
-        },
-      });
-    }
-
     const client = getOpenAIClient();
     const model = getOpenAIModel();
 
